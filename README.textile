@@ -1,0 +1,1 @@
+Scrapes planning application data from Northampton Borough Council for OpenlyLocal's open database of planning applications.

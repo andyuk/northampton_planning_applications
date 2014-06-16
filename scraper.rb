@@ -1,3 +1,4 @@
+require 'scraperwiki'
 require "rubygems"
 require "mechanize"
 require "date"
@@ -68,7 +69,7 @@ def process_search_results(agent, to_date, from_date, page)
         record[:uid] = columns[0].css("input").first["value"]
         record[:decision] = columns[1].content
 
-        if ScraperWiki.select("* FROM swdata WHERE uid = '#{record[:uid]}'").empty? 
+        if ScraperWiki.select("* FROM data WHERE uid = '#{record[:uid]}'").empty? 
           ScraperWiki.save([:uid], record)
         end
       end
@@ -183,7 +184,7 @@ def update_stale_applications(since_date = Date.today - 60)
   log "Updating recent applications"
 
   # Update the details for any recent applications
-  ScraperWiki.select("* FROM swdata WHERE start_date IS NULL OR start_date > '#{since_date.strftime('%F')}' ORDER BY date_scraped LIMIT 500").each do |record|
+  ScraperWiki.select("* FROM data WHERE start_date IS NULL OR start_date > '#{since_date.strftime('%F')}' ORDER BY date_scraped LIMIT 500").each do |record|
     update_application(agent, record)
   end
 
@@ -191,7 +192,7 @@ def update_stale_applications(since_date = Date.today - 60)
   log "Loading pending applications"
 
   # Get the details for any applications we haven't scraped yet
-  ScraperWiki.select("* FROM swdata WHERE date_scraped IS NULL LIMIT 500").each do |record|
+  ScraperWiki.select("* FROM data WHERE date_scraped IS NULL LIMIT 500").each do |record|
     update_application(agent, record)
   end
 end
